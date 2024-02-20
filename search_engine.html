@@ -1,42 +1,87 @@
-<script>
-    function searchSKU() {
-        var sku = document.getElementById("skuInput").value;
-        var resultBody = document.getElementById("resultBody");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKU Search Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>SKU Search Engine</h1>
+    <label for="skuInput">Enter SKU:</label>
+    <input type="text" id="skuInput">
+    <button onclick="searchSKU()">Search</button>
+    
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Document#</th>
+                <th>SKU</th>
+                <th>Description</th>
+                <th>ETA</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+    </table>
 
-        // Clear previous results
-        resultBody.innerHTML = "";
+    <script>
+        function searchSKU() {
+            var sku = document.getElementById("skuInput").value;
+            var resultBody = document.getElementById("resultBody");
 
-        // Load the database.htm file using AJAX
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var htmlContent = xhr.responseText;
+            // Clear previous results
+            resultBody.innerHTML = "";
 
-                // Create a temporary element to parse the HTML content
-                var tempDiv = document.createElement('div');
-                tempDiv.innerHTML = htmlContent;
+            // Load the database.htm file using AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var htmlContent = xhr.responseText;
 
-                // Get the HTML table rows
-                var rows = tempDiv.querySelectorAll("#data-table tbody tr");
+                    // Create a temporary element to parse the HTML content
+                    var tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlContent;
 
-                // Search for SKU in table rows
-                var results = Array.from(rows).filter(function(row) {
-                    var cells = row.getElementsByTagName("td");
-                    return cells[1].textContent === sku; // Assuming SKU is in the second column (index 1)
-                });
+                    // Get the HTML table rows
+                    var rows = tempDiv.querySelectorAll("#data-table tbody tr");
 
-                if (results.length > 0) {
-                    results.forEach(function(row) {
-                        resultBody.innerHTML += row.outerHTML;
+                    // Search for SKU in table rows
+                    var results = Array.from(rows).filter(function(row) {
+                        var cells = row.getElementsByTagName("td");
+                        return cells[1].textContent === sku; // Assuming SKU is in the second column (index 1)
                     });
-                } else {
-                    resultBody.innerHTML = "<tr><td colspan='4'>SKU not found</td></tr>";
-                }
-            }
-        };
 
-        // Use the GitHub Pages URL for the request
-        xhr.open("GET", "https://shoolmister.github.io/search/database.htm", true);
-        xhr.send();
-    }
-</script>
+                    if (results.length > 0) {
+                        results.forEach(function(row) {
+                            resultBody.innerHTML += row.outerHTML;
+                        });
+                    } else {
+                        resultBody.innerHTML = "<tr><td colspan='4'>SKU not found</td></tr>";
+                    }
+                }
+            };
+
+            // Use the GitHub Pages URL for the request
+            xhr.open("GET", "https://shoolmister.github.io/search/database.htm", true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

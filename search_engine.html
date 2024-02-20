@@ -1,0 +1,42 @@
+<script>
+    function searchSKU() {
+        var sku = document.getElementById("skuInput").value;
+        var resultBody = document.getElementById("resultBody");
+
+        // Clear previous results
+        resultBody.innerHTML = "";
+
+        // Load the database.htm file using AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var htmlContent = xhr.responseText;
+
+                // Create a temporary element to parse the HTML content
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlContent;
+
+                // Get the HTML table rows
+                var rows = tempDiv.querySelectorAll("#data-table tbody tr");
+
+                // Search for SKU in table rows
+                var results = Array.from(rows).filter(function(row) {
+                    var cells = row.getElementsByTagName("td");
+                    return cells[1].textContent === sku; // Assuming SKU is in the second column (index 1)
+                });
+
+                if (results.length > 0) {
+                    results.forEach(function(row) {
+                        resultBody.innerHTML += row.outerHTML;
+                    });
+                } else {
+                    resultBody.innerHTML = "<tr><td colspan='4'>SKU not found</td></tr>";
+                }
+            }
+        };
+
+        // Use the GitHub Pages URL for the request
+        xhr.open("GET", "https://<username>.github.io/<repository>/database.htm", true);
+        xhr.send();
+    }
+</script>

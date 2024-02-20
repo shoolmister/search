@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <h1>Product Search Engine</h1>
+
+    <label for="skuInput">Enter SKU:</label>
+    <input type="text" id="skuInput">
+    <button onclick="search()">Search</button>
+
+    <div id="result"></div>
+
+    <script>
+        var databaseData; // Will store the fetched data
+
+        // Load database from Excel on page load
+        window.onload = function() {
+            loadDatabase('https://example.com/path/to/database.xlsx');
+        };
+
+        function loadDatabase(filePath) {
+            fetch(filePath)
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    var workbook = XLSX.read(data, { type: 'array' });
+                    var sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    databaseData = XLSX.utils.sheet_to_json(sheet);
+                    console.log("Database Data:", databaseData);
+                })
+                .catch(error => {
+                    console.error("Error loading Excel file:", error);
+                });
+        }
+
+        function search() {
+            var sku = document.getElementById("skuInput").value.trim().toUpperCase();
+            var resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = ""; // Clear previous results
+
+            var found = false;
+            var results = "";
+
+            for (var i = 0; i < databaseData.length; i++) {
+                if (databaseData[i]["SKU"].trim().toUpperCase() === sku) {
+                    var documentNumber = databaseData[i]["Document#"];
+                    var description = databaseData[i]["Description"];
+                    var eta = databaseData[i]["ETA"];
+
+                    results += "Document#: " + documentNumber + "<br>SKU: " + sku + "<br>Description: " + description + "<br>ETA: " + eta + "<br>";
+                    found = true;
+                    // Assuming you want to display all matching results, remove the break statement
+                    
